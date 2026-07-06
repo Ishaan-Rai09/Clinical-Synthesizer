@@ -1,0 +1,23 @@
+# fly.toml for Clinical Evidence Synthesizer Backend
+app = "clinical-synthesizer-api"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  OPENAI_API_BASE = "https://integrate.api.nvidia.com/v1"
+  OPENAI_EMBEDDING_MODEL = "nvidia/nv-embed-v1"
+  OPENAI_MODEL = "openai/gpt-oss-120b"
+  STORAGE_DIR = "/app/storage"
+  CORS_ORIGINS = "https://clinical-synthesizer.vercel.app"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[mounts]]
+  source = "clinical_data"
+  destination = "/app/storage"

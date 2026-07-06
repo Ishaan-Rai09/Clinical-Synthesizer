@@ -1,0 +1,318 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 3%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 120 100% 52%;
+    --primary-foreground: 0 0% 3%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 120 100% 52%;
+    --accent-foreground: 0 0% 3%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 120 100% 52%;
+    --radius: 0.5rem;
+    --neon-green: #39FF14;
+    --neon-green-rgb: 57, 255, 20;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: rgba(var(--neon-green-rgb), 0.3);
+    color: #ffffff;
+  }
+}
+
+/* ─── Custom Scrollbar ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ─── Landing Page Animations ─── */
+
+/* Hero content positioning */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 95%;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: 100vh;
+  justify-content: center;
+  padding-top: 2vh;
+}
+
+/* ─── Feature Card Styles ─── */
+.feature-card {
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.feature-card:hover::before {
+  opacity: 0;
+}
+
+/* ─── Stat Numbers (gradient text) ─── */
+.stat-number {
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Smooth scroll ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Accessibility: Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .hero-content,
+  .feature-card,
+  .stat-number,
+  .footer-logo-text,
+  .blinking-dot,
+  .blinking-dot::after {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .letter-inner,
+  .word-inner {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  #cursor-ring,
+  #glass-card {
+    display: none !important;
+  }
+}
+.hero-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.15;
+  margin-bottom: 2.2rem;
+  letter-spacing: -0.015em;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Footer container (now in normal flow) */
+.footer-container {
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Word-by-word reveal (hero headline) - controlled by React inline transitions */
+.hero-title .word-wrapper {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+.hero-title .word-inner {
+  display: inline-block;
+}
+
+/* Letter-by-letter reveal (giant wordmark) - controlled by React inline transitions */
+.letter-wrapper {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 0.8;
+}
+.letter-inner {
+  display: inline-block;
+}
+
+/* Blinking dot pulse */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(0.85);
+    box-shadow: 0 0 4px rgba(var(--neon-green-rgb), 0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(var(--neon-green-rgb), 0.9);
+  }
+}
+
+@keyframes wave-expand {
+  0%   { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.3); opacity: 0; }
+}
+
+/* ─── Background Particles ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-80px) translateX(40px); opacity: 0.6; }
+  50% { transform: translateY(-120px) translateX(-20px); opacity: 0.2; }
+  75% { transform: translateY(-40px) translateX(60px); opacity: 0.5; }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.15; }
+  33% { transform: translateY(-50px) translateX(30px) scale(1.2); opacity: 0.3; }
+  66% { transform: translateY(-20px) translateX(-20px) scale(0.8); opacity: 0.2; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.5; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ─── Blinking Dot (CTA Button) ─── */
+.blinking-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #39FF14;
+  border-radius: 50%;
+  position: relative;
+  display: inline-block;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+.blinking-dot::after {
+  content: '';
+  position: absolute;
+  top: -5px; left: -5px; right: -5px; bottom: -5px;
+  background-color: rgba(57, 255, 20, 0.45);
+  border-radius: 50%;
+  animation: wave-expand 2s infinite ease-in-out;
+}
+
+/* ─── Cursor Ring Expanded State ─── */
+.cursor-ring-outline.expanded {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ─── Custom ease (avoids Tailwind ambiguous class warning) ─── */
+.ease-smooth {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ─── Dashboard Enhancements ─── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-panel-hover {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(var(--neon-green-rgb), 0.2);
+}
+
+.neon-glow {
+  box-shadow: 0 0 15px rgba(var(--neon-green-rgb), 0.15),
+              0 0 30px rgba(var(--neon-green-rgb), 0.05);
+}
+
+.neon-border {
+  border-color: rgba(var(--neon-green-rgb), 0.3);
+}
+
+/* ─── Message streaming cursor ─── */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background: var(--neon-green);
+  animation: blink-cursor 0.8s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
