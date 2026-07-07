@@ -9,6 +9,5 @@ langchain-pinecone
 pinecone
 openai
 pypdf
-pymupdf
 python-dotenv
 pydantic
