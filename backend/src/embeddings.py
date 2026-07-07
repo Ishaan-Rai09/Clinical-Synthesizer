@@ -44,8 +44,7 @@ class NVIDIAEmbeddings(Embeddings):
         # NVIDIA's nv-embed-v1 expects input_type parameter for optimal results
         response = self.client.embeddings.create(
             model=self.model,
-            input=texts,
-            extra_body={"input_type": "passage", "dimension": 1024},
+            input=texts,                    extra_body={"input_type": "passage"},
         )
         return [item.embedding for item in response.data]
 
@@ -60,7 +59,6 @@ class NVIDIAEmbeddings(Embeddings):
         """
         response = self.client.embeddings.create(
             model=self.model,
-            input=text,
-            extra_body={"input_type": "query", "dimension": 1024},
+            input=text,                    extra_body={"input_type": "query"},
         )
         return response.data[0].embedding
