@@ -48,6 +48,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ensure tiktoken has a writable cache dir (required on Vercel serverless)
+os.environ.setdefault("TIKTOKEN_CACHE_DIR", "/tmp")
+
 # Temporary directory for uploaded PDFs
 # On Vercel serverless, only /tmp is writable
 STORAGE_BASE = os.getenv("STORAGE_DIR", "/tmp").strip()
