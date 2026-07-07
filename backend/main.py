@@ -49,10 +49,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Data directory for uploaded PDFs
-# Use STORAGE_DIR env var in production (Fly.io) for persistent storage
-STORAGE_BASE = os.getenv("STORAGE_DIR") or os.path.dirname(__file__)
-DATA_DIR = os.path.join(STORAGE_BASE, "data")
+# Temporary directory for uploaded PDFs
+# On Vercel serverless, only /tmp is writable — set STORAGE_DIR=/tmp in env
+# Local dev: defaults to /tmp/clinical-data/
+STORAGE_BASE = os.getenv("STORAGE_DIR", "/tmp")
+DATA_DIR = os.path.join(STORAGE_BASE, "clinical-data")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 @app.get("/api/health")
