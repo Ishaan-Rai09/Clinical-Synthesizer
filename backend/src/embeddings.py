@@ -45,7 +45,7 @@ class NVIDIAEmbeddings(Embeddings):
         response = self.client.embeddings.create(
             model=self.model,
             input=texts,
-            extra_body={"input_type": "passage"},
+            extra_body={"input_type": "passage", "dimension": 1024},
         )
         return [item.embedding for item in response.data]
 
@@ -61,6 +61,6 @@ class NVIDIAEmbeddings(Embeddings):
         response = self.client.embeddings.create(
             model=self.model,
             input=text,
-            extra_body={"input_type": "query"},
+            extra_body={"input_type": "query", "dimension": 1024},
         )
         return response.data[0].embedding
