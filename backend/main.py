@@ -50,7 +50,7 @@ app.add_middleware(
 
 # Temporary directory for uploaded PDFs
 # On Vercel serverless, only /tmp is writable
-STORAGE_BASE = os.getenv("STORAGE_DIR", "/tmp")
+STORAGE_BASE = os.getenv("STORAGE_DIR", "/tmp").strip()
 DATA_DIR = os.path.join(STORAGE_BASE, "clinical-data")
 os.makedirs(DATA_DIR, exist_ok=True)
 
