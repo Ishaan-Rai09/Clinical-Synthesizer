@@ -2,8 +2,11 @@
 
 import React, { useRef, useEffect } from "react";
 import { Bot, User, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { SourceBadge } from "./SourceBadge";
 import type { SourceCitation } from "@/lib/api";
+import type { Components } from "react-markdown";
 
 export interface Message {
   id: string;
@@ -18,6 +21,151 @@ interface ChatWindowProps {
   isLoading?: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// Styled markdown components
+// ---------------------------------------------------------------------------
+const markdownComponents: Components = {
+  h1: ({ children, ...props }) => (
+    <h1 className="mb-2 mt-4 text-lg font-bold text-white first:mt-0" {...props}>
+      {children}
+    </h1>
+  ),
+  h2: ({ children, ...props }) => (
+    <h2 className="mb-2 mt-3 text-base font-semibold text-white" {...props}>
+      {children}
+    </h2>
+  ),
+  h3: ({ children, ...props }) => (
+    <h3 className="mb-1 mt-3 text-sm font-semibold text-[#39FF14]" {...props}>
+      {children}
+    </h3>
+  ),
+  p: ({ children, ...props }) => (
+    <p className="mb-2 leading-relaxed text-gray-200 last:mb-0" {...props}>
+      {children}
+    </p>
+  ),
+  ul: ({ children, ...props }) => (
+    <ul className="mb-2 list-disc space-y-1 pl-5 text-gray-200 last:mb-0" {...props}>
+      {children}
+    </ul>
+  ),
+  ol: ({ children, ...props }) => (
+    <ol className="mb-2 list-decimal space-y-1 pl-5 text-gray-200 last:mb-0" {...props}>
+      {children}
+    </ol>
+  ),
+  li: ({ children, ...props }) => (
+    <li className="text-sm leading-relaxed" {...props}>
+      {children}
+    </li>
+  ),
+  strong: ({ children, ...props }) => (
+    <strong className="font-semibold text-white" {...props}>
+      {children}
+    </strong>
+  ),
+  em: ({ children, ...props }) => (
+    <em className="italic text-gray-300" {...props}>
+      {children}
+    </em>
+  ),
+  code: ({ className, children, ...props }) => {
+    const isInline = !className;
+    return (
+      <code
+        className={
+          isInline
+            ? "rounded bg-white/[0.08] px-1.5 py-0.5 text-sm font-mono text-[#39FF14]"
+            : "text-sm font-mono text-gray-200"
+        }
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children }) => (
+    <pre className="mb-3 overflow-x-auto rounded-lg border border-white/[0.06] bg-black/60 p-4 last:mb-0">
+      {children}
+    </pre>
+  ),
+  table: ({ children }) => (
+    <div className="mb-3 overflow-x-auto last:mb-0">
+      <table className="min-w-full border-collapse rounded-lg border border-white/[0.08] text-sm">
+        {children}
+      </table>
+    </div>
+  ),
+  thead: ({ children, ...props }) => (
+    <thead className="bg-white/[0.04]" {...props}>
+      {children}
+    </thead>
+  ),
+  tbody: ({ children, ...props }) => (
+    <tbody className="divide-y divide-white/[0.06]" {...props}>
+      {children}
+    </tbody>
+  ),
+  tr: ({ children, ...props }) => (
+    <tr className="transition-colors hover:bg-white/[0.02]" {...props}>
+      {children}
+    </tr>
+  ),
+  th: ({ children, ...props }) => (
+    <th
+      className="border-b border-white/[0.08] px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+      {...props}
+    >
+      {children}
+    </th>
+  ),
+  td: ({ children, ...props }) => (
+    <td className="px-3 py-2 text-sm text-gray-200" {...props}>
+      {children}
+    </td>
+  ),
+  hr: ({ ...props }) => (
+    <hr className="my-3 border-white/[0.06]" {...props} />
+  ),
+  blockquote: ({ children, ...props }) => (
+    <blockquote
+      className="mb-2 border-l-2 border-[#39FF14]/30 pl-4 italic text-gray-400 last:mb-0"
+      {...props}
+    >
+      {children}
+    </blockquote>
+  ),
+  a: ({ children, href, ...props }) => (
+    <a
+      href={href}
+      className="text-[#39FF14] underline underline-offset-2 transition-colors hover:text-[#39FF14]/80"
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    >
+      {children}
+    </a>
+  ),
+};
+
+// ---------------------------------------------------------------------------
+// MarkdownRenderer
+// ---------------------------------------------------------------------------
+function MarkdownRenderer({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={markdownComponents}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ChatWindow
+// ---------------------------------------------------------------------------
 export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -81,18 +229,24 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
 
             {/* Message Bubble */}
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+              className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                 message.role === "user"
                   ? "border border-[#39FF14]/20 bg-[#39FF14]/10 text-white"
                   : "border border-white/[0.06] bg-white/[0.03] text-gray-200 backdrop-blur-sm"
               }`}
             >
-              <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                {message.content}
-                {message.isStreaming && (
-                  <span className="inline-block w-[2px] h-[1.1em] bg-[#39FF14] ml-0.5 animate-pulse" />
-                )}
-              </div>
+              {message.role === "user" ? (
+                <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                  {message.content}
+                </div>
+              ) : (
+                <div className="prose prose-invert max-w-none text-sm leading-relaxed">
+                  <MarkdownRenderer content={message.content} />
+                  {message.isStreaming && (
+                    <span className="inline-block h-[1.1em] w-[2px] animate-pulse bg-[#39FF14] ml-0.5" />
+                  )}
+                </div>
+              )}
 
               {/* Source Citations */}
               {message.sources && message.sources.length > 0 && (
