@@ -26,17 +26,17 @@ interface ChatWindowProps {
 // ---------------------------------------------------------------------------
 const markdownComponents: Components = {
   h1: ({ children, ...props }) => (
-    <h1 className="mb-2 mt-4 text-lg font-bold text-white first:mt-0" {...props}>
+    <h1 className="mb-2 mt-4 text-base font-bold text-white first:mt-0 sm:text-lg" {...props}>
       {children}
     </h1>
   ),
   h2: ({ children, ...props }) => (
-    <h2 className="mb-2 mt-3 text-base font-semibold text-white" {...props}>
+    <h2 className="mb-2 mt-3 text-sm font-semibold text-white sm:text-base" {...props}>
       {children}
     </h2>
   ),
   h3: ({ children, ...props }) => (
-    <h3 className="mb-1 mt-3 text-sm font-semibold text-[#39FF14]" {...props}>
+    <h3 className="mb-1 mt-3 text-xs font-semibold text-[#39FF14] sm:text-sm" {...props}>
       {children}
     </h3>
   ),
@@ -46,17 +46,17 @@ const markdownComponents: Components = {
     </p>
   ),
   ul: ({ children, ...props }) => (
-    <ul className="mb-2 list-disc space-y-1 pl-5 text-gray-200 last:mb-0" {...props}>
+    <ul className="mb-2 list-disc space-y-1 pl-4 text-gray-200 last:mb-0 sm:pl-5" {...props}>
       {children}
     </ul>
   ),
   ol: ({ children, ...props }) => (
-    <ol className="mb-2 list-decimal space-y-1 pl-5 text-gray-200 last:mb-0" {...props}>
+    <ol className="mb-2 list-decimal space-y-1 pl-4 text-gray-200 last:mb-0 sm:pl-5" {...props}>
       {children}
     </ol>
   ),
   li: ({ children, ...props }) => (
-    <li className="text-sm leading-relaxed" {...props}>
+    <li className="text-xs leading-relaxed sm:text-sm" {...props}>
       {children}
     </li>
   ),
@@ -76,8 +76,8 @@ const markdownComponents: Components = {
       <code
         className={
           isInline
-            ? "rounded bg-white/[0.08] px-1.5 py-0.5 text-sm font-mono text-[#39FF14]"
-            : "text-sm font-mono text-gray-200"
+            ? "rounded bg-white/[0.08] px-1 py-0.5 text-xs font-mono text-[#39FF14] sm:text-sm"
+            : "text-xs font-mono text-gray-200 sm:text-sm"
         }
         {...props}
       >
@@ -86,13 +86,13 @@ const markdownComponents: Components = {
     );
   },
   pre: ({ children }) => (
-    <pre className="mb-3 overflow-x-auto rounded-lg border border-white/[0.06] bg-black/60 p-4 last:mb-0">
+    <pre className="mb-3 overflow-x-auto rounded-lg border border-white/[0.06] bg-black/60 p-3 text-xs last:mb-0 sm:p-4 sm:text-sm">
       {children}
     </pre>
   ),
   table: ({ children }) => (
     <div className="mb-3 overflow-x-auto last:mb-0">
-      <table className="min-w-full border-collapse rounded-lg border border-white/[0.08] text-sm">
+      <table className="min-w-full border-collapse rounded-lg border border-white/[0.08] text-xs sm:text-sm">
         {children}
       </table>
     </div>
@@ -114,14 +114,14 @@ const markdownComponents: Components = {
   ),
   th: ({ children, ...props }) => (
     <th
-      className="border-b border-white/[0.08] px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+      className="border-b border-white/[0.08] px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wider text-gray-400 sm:px-3 sm:py-2 sm:text-xs"
       {...props}
     >
       {children}
     </th>
   ),
   td: ({ children, ...props }) => (
-    <td className="px-3 py-2 text-sm text-gray-200" {...props}>
+    <td className="px-2 py-1.5 text-xs text-gray-200 sm:px-3 sm:py-2 sm:text-sm" {...props}>
       {children}
     </td>
   ),
@@ -130,7 +130,7 @@ const markdownComponents: Components = {
   ),
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mb-2 border-l-2 border-[#39FF14]/30 pl-4 italic text-gray-400 last:mb-0"
+      className="mb-2 border-l-2 border-[#39FF14]/30 pl-3 italic text-gray-400 last:mb-0 sm:pl-4"
       {...props}
     >
       {children}
@@ -154,10 +154,7 @@ const markdownComponents: Components = {
 // ---------------------------------------------------------------------------
 function MarkdownRenderer({ content }: { content: string }) {
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={markdownComponents}
-    >
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
       {content}
     </ReactMarkdown>
   );
@@ -173,28 +170,28 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // ── Empty state ──
   if (messages.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm sm:h-14 sm:w-14">
-          <Bot className="h-6 w-6 text-[#39FF14] sm:h-7 sm:w-7" />
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 py-10">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] sm:h-14 sm:w-14">
+          <FlaskIcon />
         </div>
-        <h3 className="mt-3 text-base font-semibold text-white sm:mt-4 sm:text-lg">
+        <h3 className="mt-4 text-base font-semibold text-white sm:text-lg">
           Clinical Evidence Synthesizer
         </h3>
-        <p className="mt-1 max-w-[280px] text-center text-xs text-gray-500 sm:max-w-sm sm:text-sm">
+        <p className="mt-1.5 max-w-[280px] text-center text-xs text-gray-500 sm:max-w-sm sm:text-sm">
           Upload clinical trial PDFs, then ask complex comparative clinical
-          questions. The AI agent will answer using retrieved evidence with
-          source citations.
+          questions. The AI will answer using retrieved evidence with citations.
         </p>
-        <div className="mt-4 flex flex-wrap justify-center gap-1.5 sm:mt-6 sm:gap-2">
-          <span className="rounded-full border border-[#39FF14]/20 bg-[#39FF14]/5 px-2.5 py-0.5 text-[10px] font-medium text-[#39FF14]/80 sm:px-3 sm:py-1 sm:text-xs">
-            Upload PDFs above
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <span className="rounded-full border border-[#39FF14]/20 bg-[#39FF14]/5 px-3 py-1 text-[11px] font-medium text-[#39FF14]/80 sm:text-xs">
+            Upload PDFs
           </span>
-          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/5 px-2.5 py-0.5 text-[10px] font-medium text-emerald-400/80 sm:px-3 sm:py-1 sm:text-xs">
-            Ask clinical questions
+          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1 text-[11px] font-medium text-emerald-400/80 sm:text-xs">
+            Ask questions
           </span>
-          <span className="rounded-full border border-purple-400/20 bg-purple-400/5 px-2.5 py-0.5 text-[10px] font-medium text-purple-400/80 sm:px-3 sm:py-1 sm:text-xs">
+          <span className="rounded-full border border-purple-400/20 bg-purple-400/5 px-3 py-1 text-[11px] font-medium text-purple-400/80 sm:text-xs">
             Compare treatments
           </span>
         </div>
@@ -202,37 +199,38 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
     );
   }
 
+  // ── Messages ──
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-3 sm:px-4 sm:py-4">
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col gap-4 sm:gap-5">
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex gap-2 sm:gap-3 ${
+            className={`flex w-full gap-2 sm:gap-3 ${
               message.role === "user" ? "flex-row-reverse" : "flex-row"
             }`}
           >
-            {/* Avatar */}
+            {/* Avatar — hidden on mobile for cleaner look */}
             <div
-              className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full sm:h-8 sm:w-8 ${
+              className={`hidden h-7 w-7 flex-shrink-0 items-center justify-center rounded-full sm:flex ${
                 message.role === "user"
                   ? "border border-[#39FF14]/30 bg-[#39FF14]/10"
                   : "border border-white/[0.08] bg-white/[0.04]"
               }`}
             >
               {message.role === "user" ? (
-                <User className="h-3.5 w-3.5 text-[#39FF14] sm:h-4 sm:w-4" />
+                <User className="h-3.5 w-3.5 text-[#39FF14]" />
               ) : (
-                <Bot className="h-3.5 w-3.5 text-gray-400 sm:h-4 sm:w-4" />
+                <Bot className="h-3.5 w-3.5 text-gray-400" />
               )}
             </div>
 
-            {/* Message Bubble */}
+            {/* Message bubble — full width on mobile */}
             <div
-              className={`max-w-[90%] rounded-2xl px-3 py-2.5 sm:max-w-[85%] sm:px-4 sm:py-3 ${
+              className={`min-w-0 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed sm:px-4 sm:py-3 ${
                 message.role === "user"
-                  ? "border border-[#39FF14]/20 bg-[#39FF14]/10 text-white"
-                  : "border border-white/[0.06] bg-white/[0.03] text-gray-200 backdrop-blur-sm"
+                  ? "border border-[#39FF14]/20 bg-[#39FF14]/10 text-white sm:max-w-[75%]"
+                  : "w-full border border-white/[0.06] bg-white/[0.02] text-gray-200 sm:max-w-[85%] sm:w-auto"
               }`}
             >
               {message.role === "user" ? (
@@ -240,17 +238,17 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
                   {message.content}
                 </div>
               ) : (
-                <div className="prose prose-invert max-w-none text-xs leading-relaxed sm:text-sm">
+                <div className="prose prose-invert max-w-none text-sm leading-relaxed">
                   <MarkdownRenderer content={message.content} />
                   {message.isStreaming && (
-                    <span className="inline-block h-[1.1em] w-[2px] animate-pulse bg-[#39FF14] ml-0.5" />
+                    <span className="ml-0.5 inline-block h-[1.1em] w-[2px] animate-pulse bg-[#39FF14]" />
                   )}
                 </div>
               )}
 
-              {/* Source Citations */}
+              {/* Source citations */}
               {message.sources && message.sources.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1 border-t border-white/[0.06] pt-1.5 sm:mt-3 sm:gap-1.5 sm:pt-2">
+                <div className="mt-2 flex flex-wrap gap-1.5 border-t border-white/[0.06] pt-2 sm:mt-3 sm:pt-2.5">
                   {message.sources.map((source, idx) => (
                     <SourceBadge
                       key={idx}
@@ -264,14 +262,15 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
           </div>
         ))}
 
+        {/* Loading indicator */}
         {isLoading && (
-          <div className="flex flex-row gap-2 sm:gap-3">
-            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] sm:h-8 sm:w-8">
-              <Bot className="h-3.5 w-3.5 text-gray-400 sm:h-4 sm:w-4" />
+          <div className="flex w-full gap-2 sm:gap-3">
+            <div className="hidden h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] sm:flex">
+              <Bot className="h-3.5 w-3.5 text-gray-400" />
             </div>
-            <div className="flex items-center gap-1.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-3">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-[#39FF14] sm:h-4 sm:w-4" />
-              <span className="text-xs text-gray-500 sm:text-sm">
+            <div className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+              <Loader2 className="h-4 w-4 animate-spin text-[#39FF14]" />
+              <span className="text-sm text-gray-500">
                 Analyzing evidence...
               </span>
             </div>
@@ -280,5 +279,26 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
       </div>
       <div ref={bottomRef} />
     </div>
+  );
+}
+
+// Small Flask icon for the empty state
+function FlaskIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#39FF14"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-6 w-6 sm:h-7 sm:w-7"
+    >
+      <path d="M9 2v7.5l-4.21 4.99A2 2 0 0 0 6.34 18h11.32a2 2 0 0 0 1.55-3.51L15 9.5V2" />
+      <path d="M9 2h6" />
+      <path d="M7.5 13.5h9" />
+    </svg>
   );
 }
