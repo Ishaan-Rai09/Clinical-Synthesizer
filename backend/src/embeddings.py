@@ -33,7 +33,10 @@ class NVIDIAEmbeddings(Embeddings):
         self.client = OpenAI(api_key=api_key, base_url=base_url)
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        """Embed a list of document texts.
+        """Embed a list of document texts in batches.
+
+        Batches requests to avoid hitting API limits and to stay within
+        Vercel's 10s serverless timeout by sending smaller batches.
 
         Args:
             texts: List of text strings to embed.
@@ -41,12 +44,19 @@ class NVIDIAEmbeddings(Embeddings):
         Returns:
             List of embedding vectors, one per input text.
         """
-        # NVIDIA's nv-embed-v1 expects input_type parameter for optimal results
-        response = self.client.embeddings.create(
-            model=self.model,
-            input=texts,                    extra_body={"input_type": "passage"},
-        )
-        return [item.embedding for item in response.data]
+        BATCH_SIZE = 100
+        all_embeddings: List[List[float]] = []
+
+        for i in range(0, len(texts), BATCH_SIZE):
+            batch = texts[i : i + BATCH_SIZE]
+            response = self.client.embeddings.create(
+                model=self.model,
+                input=batch,
+                extra_body={"input_type": "passage"},
+            )
+            all_embeddings.extend(item.embedding for item in response.data)
+
+        return all_embeddings
 
     def embed_query(self, text: str) -> List[float]:
         """Embed a single query text.

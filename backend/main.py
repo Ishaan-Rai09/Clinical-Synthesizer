@@ -124,7 +124,10 @@ async def upload_pdf(file: UploadFile = File(...)):
     except Exception as e:
         if os.path.exists(file_path):
             os.remove(file_path)
-        raise HTTPException(status_code=500, detail="Failed to index document.")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to index document: {type(e).__name__}: {str(e)[:200]}",
+        )
 
     return UploadResponse(status="success", filename=file.filename, chunks=len(chunks))
 

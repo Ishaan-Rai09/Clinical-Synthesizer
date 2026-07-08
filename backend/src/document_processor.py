@@ -38,9 +38,11 @@ def load_and_chunk_pdf(file_path: str, filename: str) -> List[Document]:
         doc.metadata["source"] = filename
 
     # Split documents into overlapping chunks
+    # chunk_size=2000 reduces number of API calls (fewer chunks to embed)
+    # which helps avoid Vercel's 10s serverless timeout
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200,
+        chunk_size=2000,
+        chunk_overlap=300,
         length_function=len,
         is_separator_regex=False,
     )
