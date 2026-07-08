@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { Bot, User, Loader2 } from "lucide-react";
+import { Bot, User, Loader2, Upload } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { SourceBadge } from "./SourceBadge";
@@ -19,6 +19,7 @@ export interface Message {
 interface ChatWindowProps {
   messages: Message[];
   isLoading?: boolean;
+  onOpenSidebar?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -163,7 +164,7 @@ function MarkdownRenderer({ content }: { content: string }) {
 // ---------------------------------------------------------------------------
 // ChatWindow
 // ---------------------------------------------------------------------------
-export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
+export function ChatWindow({ messages, isLoading = false, onOpenSidebar }: ChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -184,7 +185,20 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
           Upload clinical trial PDFs, then ask complex comparative clinical
           questions. The AI will answer using retrieved evidence with citations.
         </p>
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
+
+        {/* ── Upload call-to-action ── */}
+        {onOpenSidebar && (
+          <button
+            onClick={onOpenSidebar}
+            className="mt-5 flex items-center gap-2 rounded-xl border border-[#39FF14]/30 bg-[#39FF14]/10 px-4 py-2.5 text-sm font-medium text-[#39FF14] transition-all hover:bg-[#39FF14]/20 hover:shadow-[0_0_20px_rgba(57,255,20,0.15)] active:scale-[0.97] sm:mt-6"
+          >
+            <Upload className="h-4 w-4" />
+            Upload a clinical trial PDF
+            <span className="ml-0.5 text-[#39FF14]/60">&rarr;</span>
+          </button>
+        )}
+
+        <div className="mt-4 flex flex-wrap justify-center gap-2 sm:mt-5">
           <span className="rounded-full border border-[#39FF14]/20 bg-[#39FF14]/5 px-3 py-1 text-[11px] font-medium text-[#39FF14]/80 sm:text-xs">
             Upload PDFs
           </span>

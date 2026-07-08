@@ -113,7 +113,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
         onDrop={handleDrop}
         className={`
           relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed
-          p-6 transition-all duration-200
+          p-4 transition-all duration-200 sm:p-6
           ${
             isDragOver
               ? "border-[#39FF14]/40 bg-[#39FF14]/5"
@@ -123,17 +123,17 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
       >
         <div className="flex flex-col items-center gap-2">
           {uploadStatus?.status === "uploading" ? (
-            <Loader2 className="h-8 w-8 animate-spin text-[#39FF14]" />
+            <Loader2 className="h-6 w-6 animate-spin text-[#39FF14] sm:h-8 sm:w-8" />
           ) : uploadStatus?.status === "success" ? (
-            <CheckCircle2 className="h-8 w-8 text-[#39FF14]" />
+            <CheckCircle2 className="h-6 w-6 text-[#39FF14] sm:h-8 sm:w-8" />
           ) : uploadStatus?.status === "error" ? (
-            <XCircle className="h-8 w-8 text-red-500" />
+            <XCircle className="h-6 w-6 text-red-500 sm:h-8 sm:w-8" />
           ) : (
-            <Upload className="h-8 w-8 text-gray-600" />
+            <Upload className="h-6 w-6 text-gray-600 sm:h-8 sm:w-8" />
           )}
 
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-300">
+            <p className="text-xs font-medium text-gray-300 sm:text-sm">
               {uploadStatus?.status === "uploading"
                 ? `Uploading ${uploadStatus.filename}...`
                 : uploadStatus?.status === "success"
@@ -142,14 +142,14 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
                 ? uploadStatus.message || "Upload failed"
                 : "Drop your clinical trial PDF here"}
             </p>
-            <p className="mt-1 text-xs text-gray-600">
+            <p className="mt-1 text-[10px] text-gray-600 sm:text-xs">
               {!uploadStatus && "or click to browse files"}
             </p>
           </div>
         </div>
 
         {uploadStatus?.status === "uploading" && (
-          <div className="mt-3 h-1 w-full max-w-[200px] overflow-hidden rounded-full bg-white/[0.06]">
+          <div className="mt-2 h-0.5 w-full max-w-[160px] overflow-hidden rounded-full bg-white/[0.06] sm:mt-3 sm:h-1 sm:max-w-[200px]">
             <div className="h-full w-full animate-pulse rounded-full bg-[#39FF14]" />
           </div>
         )}

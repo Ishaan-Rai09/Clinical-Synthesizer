@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
-import { FlaskConical, Loader2, Menu, X, ChevronLeft } from "lucide-react";
+import { FlaskConical, Loader2, Menu, X, ChevronLeft, Upload } from "lucide-react";
 import Link from "next/link";
 import { UploadZone } from "@/components/UploadZone";
 import { DocumentList } from "@/components/DocumentList";
@@ -179,12 +179,12 @@ export default function Dashboard() {
       {/* ════════════════════════════════════════
            HEADER — ChatGPT-style, minimal on mobile
            ════════════════════════════════════════ */}
-      <header className="flex h-12 flex-shrink-0 items-center gap-1 border-b border-white/[0.06] bg-[#070708] px-2 sm:h-14 sm:gap-2 sm:px-4 md:border-b-0">
+      <header className="flex h-12 flex-shrink-0 items-center gap-1 border-b border-white/[0.06] bg-[#070708] px-2 sm:h-14 sm:gap-2 sm:px-4 sm:border-b-0">
         {/* Mobile: hamburger */}
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white md:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white sm:hidden"
           aria-label="Open documents panel"
         >
           <Menu className="h-5 w-5" />
@@ -193,7 +193,7 @@ export default function Dashboard() {
         {/* Desktop: back to home */}
         <Link
           href="/"
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-white/[0.06] hover:text-white md:flex"
+          className="hidden h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-white/[0.06] hover:text-white sm:flex"
         >
           <ChevronLeft className="h-4 w-4" />
         </Link>
@@ -206,9 +206,28 @@ export default function Dashboard() {
           </span>
         </div>
 
-        {/* Uploading indicator — inline, compact */}
+        {/* Mobile: Upload button + processing indicator — right-aligned together */}
+        <div className="ml-auto flex items-center gap-2 sm:hidden">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-[#39FF14]/20 bg-[#39FF14]/5 px-2.5 text-xs font-medium text-[#39FF14] transition-colors hover:bg-[#39FF14]/10"
+            aria-label="Upload a clinical trial PDF"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            Upload PDF
+          </button>
+          {isUploading && (
+            <div className="flex items-center gap-1.5 rounded-full bg-[#39FF14]/10 px-2.5 py-1">
+              <Loader2 className="h-3 w-3 animate-spin text-[#39FF14]" />
+              <span className="text-[11px] text-[#39FF14]">Processing</span>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop: processing indicator */}
         {isUploading && (
-          <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[#39FF14]/10 px-2.5 py-1">
+          <div className="ml-auto hidden items-center gap-1.5 rounded-full bg-[#39FF14]/10 px-2.5 py-1 sm:flex">
             <Loader2 className="h-3 w-3 animate-spin text-[#39FF14]" />
             <span className="text-[11px] text-[#39FF14]">Processing</span>
           </div>
@@ -222,7 +241,7 @@ export default function Dashboard() {
         {/* ─── Sidebar Overlay (mobile) ─── */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-40 bg-black/60 md:hidden"
+            className="fixed inset-0 z-40 bg-black/60 sm:hidden"
             onClick={() => setSidebarOpen(false)}
             aria-hidden="true"
           />
@@ -231,9 +250,9 @@ export default function Dashboard() {
         {/* ─── Sidebar ─── */}
         <aside
           className={`
-            fixed inset-y-0 left-0 z-50 flex w-[85vw] max-w-[320px] flex-col border-r border-white/[0.08] bg-[#0a0a0b] shadow-2xl
+            fixed inset-y-0 left-0 z-50 flex w-[80vw] max-w-[280px] flex-col border-r border-white/[0.08] bg-[#0a0a0b] shadow-2xl
             transition-transform duration-300 ease-smooth
-            md:static md:z-auto md:w-80 md:translate-x-0 md:shadow-none md:bg-black/30
+            sm:static sm:z-auto sm:w-72 sm:translate-x-0 sm:shadow-none sm:bg-black/30 lg:w-80
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           `}
         >
@@ -304,10 +323,14 @@ export default function Dashboard() {
 
         {/* ─── Chat Area ─── */}
         <main className="flex min-w-0 flex-1 flex-col">
-          <ChatWindow messages={messages} isLoading={isQuerying} />
+          <ChatWindow
+            messages={messages}
+            isLoading={isQuerying}
+            onOpenSidebar={() => setSidebarOpen(true)}
+          />
 
           {/* Input area — clean, minimal */}
-          <div className="flex-shrink-0 border-t border-white/[0.06] bg-gradient-to-t from-[#070708] via-[#070708] to-transparent px-3 pb-3 pt-2 sm:px-4 sm:pb-4 sm:pt-3 md:border-t-0">
+          <div className="flex-shrink-0 border-t border-white/[0.06] bg-gradient-to-t from-[#070708] via-[#070708] to-transparent px-3 pb-3 pt-2 sm:px-4 sm:pb-4 sm:pt-3 sm:border-t-0">
             <QueryInput
               onSend={handleSendQuery}
               isDisabled={isUploading}
