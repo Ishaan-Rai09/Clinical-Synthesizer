@@ -51,7 +51,7 @@ export function QueryInput({
   };
 
   return (
-    <div className="flex items-end gap-2 rounded-xl border border-white/[0.08] bg-black/60 p-2 shadow-sm transition-all focus-within:border-[#39FF14]/30 focus-within:ring-1 focus-within:ring-[#39FF14]/20 backdrop-blur-xl">
+    <div className="flex items-end gap-1.5 rounded-xl border border-white/[0.08] bg-black/60 p-1.5 shadow-sm transition-all focus-within:border-[#39FF14]/30 focus-within:ring-1 focus-within:ring-[#39FF14]/20 backdrop-blur-xl sm:gap-2 sm:p-2">
       <textarea
         ref={textareaRef}
         value={query}
@@ -60,20 +60,20 @@ export function QueryInput({
         placeholder={placeholder}
         disabled={isDisabled || isSending}
         rows={1}
-        className="min-h-[40px] flex-1 resize-none bg-transparent px-2 py-2 text-sm text-gray-200 outline-none placeholder:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
+        className="min-h-[36px] flex-1 resize-none bg-transparent px-1.5 py-1.5 text-xs text-gray-200 outline-none placeholder:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[40px] sm:px-2 sm:py-2 sm:text-sm"
         aria-label="Clinical question input"
       />
 
       <button
         onClick={handleSubmit}
         disabled={!query.trim() || isSending || isDisabled}
-        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#39FF14] text-black transition-all hover:bg-[#39FF14]/90 disabled:cursor-not-allowed disabled:opacity-30"
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#39FF14] text-black transition-all hover:bg-[#39FF14]/90 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
         title="Send question"
       >
         {isSending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4" />
         ) : (
-          <Send className="h-4 w-4" />
+          <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         )}
       </button>
     </div>

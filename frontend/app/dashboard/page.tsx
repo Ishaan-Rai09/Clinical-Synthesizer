@@ -168,7 +168,7 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen flex-col bg-[#070708]">
       {/* Header */}
-      <header className="flex h-14 flex-shrink-0 items-center gap-3 border-b border-white/[0.06] bg-black/60 px-4 py-3 backdrop-blur-xl sm:h-16 sm:px-6">
+      <header className="flex h-14 flex-shrink-0 items-center gap-1.5 border-b border-white/[0.06] bg-black/60 px-3 py-3 backdrop-blur-xl sm:gap-3 sm:px-6 sm:h-16">
         {/* Mobile sidebar toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -191,8 +191,8 @@ export default function Dashboard() {
         </div>
 
         {isUploading && (
-          <div className="ml-auto flex items-center gap-2 text-xs text-[#39FF14] sm:text-sm">
-            <Loader2 className="h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4" />
+          <div className="ml-auto flex items-center gap-1.5 text-[11px] text-[#39FF14] sm:gap-2 sm:text-sm">
+            <Loader2 className="h-3 w-3 animate-spin sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Processing PDF...</span>
             <span className="sm:hidden">Processing...</span>
           </div>
@@ -204,7 +204,7 @@ export default function Dashboard() {
         {/* ─── Sidebar overlay backdrop (mobile) ─── */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -212,8 +212,8 @@ export default function Dashboard() {
         {/* Left Sidebar - Document Management */}
         <aside
           className={`
-            fixed inset-y-0 left-0 z-40 top-14 flex w-72 flex-shrink-0 flex-col border-r border-white/[0.06] bg-[#070708] backdrop-blur-sm transition-transform duration-300 ease-smooth
-            md:static md:z-auto md:top-auto md:w-80 md:translate-x-0 md:bg-black/30
+            fixed left-0 z-40 top-14 bottom-0 flex w-64 flex-shrink-0 flex-col border-r border-white/[0.06] bg-[#070708] shadow-2xl backdrop-blur-sm transition-transform duration-300 ease-smooth
+            md:static md:z-auto md:bottom-auto md:w-80 md:translate-x-0 md:shadow-none md:bg-black/30
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
         >
@@ -232,7 +232,7 @@ export default function Dashboard() {
           </div>
 
           {/* Tips at bottom of sidebar */}
-          <div className="border-t border-white/[0.06] p-3 sm:p-4">
+          <div className="hidden sm:block border-t border-white/[0.06] p-3 sm:p-4">
             <h3 className="mb-2 text-xs font-semibold text-gray-500">
               Example Queries
             </h3>
