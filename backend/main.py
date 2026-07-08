@@ -5,12 +5,14 @@ comparing drugs, listing documents, and deleting documents.
 """
 
 import os
+import re
 import shutil
 from typing import List
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from src.agent import run_agent
 from src.document_processor import load_and_chunk_pdf
@@ -38,7 +40,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS configuration for Next.js frontend
+# ─── Security: CORS ───
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +49,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ─── Security: File upload limits ───
+MAX_UPLOAD_SIZE = int(os.getenv("MAX_UPLOAD_SIZE", "50")) * 1024 * 1024  # default 50MB
+
+# ─── Security: Safe filename pattern (case-insensitive extension) ───
+SAFE_FILENAME_RE = re.compile(r"^[a-zA-Z0-9_\-.\(\) ]+\.pdf$", re.IGNORECASE)
+
+# ─── Security: Global exception handler to prevent stack trace leaks ───
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal server error occurred."},
+    )
+
 
 # Ensure tiktoken has a writable cache dir (required on Vercel serverless)
 os.environ.setdefault("TIKTOKEN_CACHE_DIR", "/tmp")
@@ -65,27 +82,49 @@ async def health_check():
 
 @app.post("/api/upload", response_model=UploadResponse)
 async def upload_pdf(file: UploadFile = File(...)):
-    if not file.filename or not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are accepted.")
+    # ─── Check filename exists ───
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Filename is required.")
+
+    # ─── Security: Validate filename (prevent path traversal) ───
+    if not SAFE_FILENAME_RE.match(file.filename):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid filename. Only PDF files with alphanumeric names are accepted.",
+        )
+
+    # ─── Security: Validate file size ───
+    contents = await file.read()
+    if len(contents) > MAX_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File exceeds maximum size of {MAX_UPLOAD_SIZE // (1024*1024)}MB.",
+        )
+
+    # ─── Security: Validate PDF magic bytes ───
+    if not contents.startswith(b"%PDF"):
+        raise HTTPException(status_code=400, detail="File is not a valid PDF.")
 
     file_path = os.path.join(DATA_DIR, file.filename)
     try:
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+            buffer.write(contents)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to save file.")
 
     try:
         chunks = load_and_chunk_pdf(file_path, file.filename)
     except Exception as e:
         if os.path.exists(file_path):
             os.remove(file_path)
-        raise HTTPException(status_code=500, detail=f"Failed to process PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to process PDF.")
 
     try:
         add_documents(chunks)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to index document: {str(e)}")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=500, detail="Failed to index document.")
 
     return UploadResponse(status="success", filename=file.filename, chunks=len(chunks))
 
@@ -105,8 +144,8 @@ async def query_evidence(request: QueryRequest):
                     SourceCitation(document=source, page=page or 0, content=content[:300])
                 )
         return QueryResponse(answer=answer, sources=sources)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Query processing failed: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Query processing failed.")
 
 
 @app.get("/api/documents", response_model=List[DocumentInfo])
@@ -117,10 +156,16 @@ async def get_documents():
 
 @app.delete("/api/documents/{filename}")
 async def remove_document(filename: str):
+    # ─── Security: Validate filename (prevent path traversal) ───
+    if not SAFE_FILENAME_RE.match(filename):
+        raise HTTPException(status_code=400, detail="Invalid filename.")
+
     delete_document(filename)
     file_path = os.path.join(DATA_DIR, filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    # ─── Security: Ensure file is within DATA_DIR ───
+    if os.path.realpath(file_path).startswith(os.path.realpath(DATA_DIR)):
+        if os.path.exists(file_path):
+            os.remove(file_path)
     return {"status": "deleted", "filename": filename}
 
 
@@ -146,8 +191,8 @@ async def compare_drugs(request: CompareRequest):
             comparison=answer,
             sources=sources,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Comparison failed: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Comparison failed.")
 
 
 if __name__ == "__main__":

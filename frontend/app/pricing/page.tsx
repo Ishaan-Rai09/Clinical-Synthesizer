@@ -68,7 +68,7 @@ export default function PricingPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1100px] px-4 pb-20 pt-28">
+      <div className="mx-auto max-w-[1100px] px-3 pb-16 pt-24 sm:px-4 sm:pb-20 sm:pt-28">
         {/* Header */}
         <div className="mb-4 flex items-center gap-3">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
